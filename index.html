@@ -198,6 +198,8 @@ section.s.panel{background:var(--panel);backdrop-filter:blur(8px);-webkit-backdr
 /* footer */
 footer{border-top:1px solid var(--line);background:var(--bg);padding-block:36px;padding-bottom:calc(36px + env(safe-area-inset-bottom,0px))}
 footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+footer a.mono{transition:color .2s}
+footer a.mono:hover{color:var(--ink)}
 
 /* modal */
 .modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(247,246,242,.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
@@ -212,6 +214,14 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
 .f input:focus,.f textarea:focus,.f select:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(224,20,47,.15)}
 .f textarea{min-height:110px;resize:vertical}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.consent{display:flex;gap:11px;align-items:flex-start;cursor:pointer;margin-top:2px}
+.consent input{appearance:none;-webkit-appearance:none;flex:0 0 18px;width:18px;height:18px;margin:2px 0 0;border:1px solid var(--line2);background:var(--bg);display:grid;place-content:center;cursor:pointer;transition:.2s}
+.consent input:checked{background:var(--red);border-color:var(--red)}
+.consent input:checked::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+.consent input:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.consent span{font-size:13px;line-height:1.55;color:var(--mute)}
+.consent a{color:var(--red);text-decoration:underline;text-underline-offset:2px}
+.consent a:hover{color:var(--ink)}
 @media (max-width:560px){.two{grid-template-columns:1fr}}
 
 /* reveal — always animated (does not depend on OS motion settings) */
@@ -238,13 +248,13 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   <div class="links">
     <a href="#thesis">Thesis</a><a href="#open">Open</a><a href="#collective">Collective</a><a href="#circle">Circle</a><a href="#team">Team</a>
   </div>
-  <button class="btn" data-pitch>Pitch Tirla ↗</button>
+  <a class="btn" href="apply.html">Pitch Tirla ↗</a>
   <button class="burger" id="burger" aria-label="Menu"><i></i></button>
 </nav>
 <div class="sheet" id="sheet">
   <button class="x" id="sheetx">CLOSE</button>
   <a href="#thesis">Thesis</a><a href="#open">Open</a><a href="#collective">Collective</a><a href="#circle">Circle</a><a href="#team">Team</a>
-  <a href="#" data-pitch class="red">Pitch Tirla ↗</a>
+  <a href="apply.html" class="red">Pitch Tirla ↗</a>
 </div>
 
 <header class="hero" id="top">
@@ -260,7 +270,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
     <div class="hero-grid">
       <p class="lede">Tirla is an early-stage venture firm backing exceptional founders building from India for the world. We invest at the point where conviction matters more than consensus — and we move fast when it does.</p>
       <div class="ctas">
-        <button class="btn" data-pitch>Pitch Tirla ↗</button>
+        <a class="btn" href="apply.html">Pitch Tirla ↗</a>
         <a class="btn ghost" href="#thesis">The thesis</a>
       </div>
     </div>
@@ -324,14 +334,14 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
         <div class="num">01</div>
         <h3>Tirla Open</h3>
         <p>Our direct line to founders. Still researching a problem, writing the first lines of code, or already finding product-market fit — tell us what you're building. We review every serious application and move quickly when conviction exists.</p>
-        <div class="foot"><span class="tag">Takes a few minutes</span><button class="go" data-pitch>Pitch Tirla <span class="arr">↗</span></button></div>
+        <div class="foot"><span class="tag">Takes a few minutes</span><a class="go" href="apply.html">Pitch Tirla <span class="arr">↗</span></a></div>
       </div>
       <div class="door" id="collective" data-tilt>
         <span class="who">For Tirla founders</span>
         <div class="num">02</div>
         <h3>Tirla Collective</h3>
         <p>The operating network behind every Tirla company — operators, specialists, customers and fellow founders on product, go-to-market, talent, capital and brand. An extension of the founder's office.</p>
-        <div class="foot"><span class="tag">Portfolio only</span><button class="go" data-pitch>Get backed first <span class="arr">↗</span></button></div>
+        <div class="foot"><span class="tag">Portfolio only</span><a class="go" href="apply.html">Get backed first <span class="arr">↗</span></a></div>
       </div>
       <div class="door" id="circle" data-tilt>
         <span class="who">For investors</span>
@@ -362,7 +372,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
     <div class="eyebrow mono rv">For founders</div>
     <h2 class="h2 rv">Your company might begin with <span class="red">one conversation.</span></h2>
     <p class="sub rv">If you're obsessed with a problem, building something technically ambitious or simply believe the world should work differently — we want to hear from you before anyone else does.</p>
-    <div class="rv" style="margin-top:36px;display:flex;gap:14px;flex-wrap:wrap"><button class="btn" data-pitch>Pitch Tirla ↗</button><a class="btn ghost" href="#thesis">Read the thesis</a></div>
+    <div class="rv" style="margin-top:36px;display:flex;gap:14px;flex-wrap:wrap"><a class="btn" href="apply.html">Pitch Tirla ↗</a><a class="btn ghost" href="#thesis">Read the thesis</a></div>
     <div class="rowc rv">
       <div><h3>Partner with Tirla</h3><p>For investors who want early access to India's next generation of founders. Tirla Circle is by invitation.</p><a class="btn ghost" href="mailto:hello@tirla.vc?subject=Tirla%20Circle%20%E2%80%94%20investor%20enquiry">Investor enquiries ↗</a></div>
       <div><h3>Follow the signal</h3><p>Essays, investment thinking and company stories from the Tirla ecosystem. Thoughtful writing, no noise.</p><a class="btn ghost" href="mailto:hello@tirla.vc?subject=Join%20Tirla%20Signals">Join Tirla Signals →</a></div>
@@ -376,33 +386,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
     <a class="brand" href="#top"><svg><use href="#mark"/></svg><span>TIRLA</span></a>
     <span class="mono">Tirla Ventures · Bengaluru · N 12°58′ E 77°35′</span>
     <span class="mono">© 2026 · Backing founders before consensus</span>
+    <a class="mono" href="privacy.html">Privacy</a>
   </div>
 </footer>
-
-<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mtitle">
-  <div class="card">
-    <button class="x" id="mx">CLOSE</button>
-    <div class="mono" style="color:var(--red)">Tirla Open / Application</div>
-    <h3 id="mtitle">Tell us what you're building.</h3>
-    <p style="color:var(--ink2);margin:0;max-width:44ch">No deck needed. No warm intro. A few lines is enough — if it's interesting, you'll hear from the investment team directly.</p>
-    <form id="pitchform">
-      <div class="two">
-        <div class="f"><label for="p_name">Your name</label><input id="p_name" name="name" required autocomplete="name"></div>
-        <div class="f"><label for="p_email">Email</label><input id="p_email" name="email" type="email" required autocomplete="email"></div>
-      </div>
-      <div class="two">
-        <div class="f"><label for="p_co">Company / project</label><input id="p_co" name="company" placeholder="Working name is fine"></div>
-        <div class="f"><label for="p_stage">Stage</label><select id="p_stage" name="stage"><option>Idea</option><option>Research</option><option>Prototype</option><option>Pre-revenue</option><option>Early revenue</option><option>Raising seed</option></select></div>
-      </div>
-      <div class="f"><label for="p_what">What are you building, and why now?</label><textarea id="p_what" name="what" required placeholder="Three sentences. The non-obvious part first."></textarea></div>
-      <div class="f"><label for="p_link">Link (site, deck, demo, LinkedIn)</label><input id="p_link" name="link" placeholder="https://"></div>
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
-        <span class="mono">We review every serious application</span>
-        <button class="btn" type="submit">Send to Tirla ↗</button>
-      </div>
-    </form>
-  </div>
-</div>
 
 <script>
 /**
@@ -426,17 +412,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;
   document.getElementById('sheetx').onclick=()=>sheet.classList.remove('open');
   sheet.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>sheet.classList.remove('open')));
 
-  /* modal */
-  const modal=document.getElementById('modal');
-  document.querySelectorAll('[data-pitch]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();modal.classList.add('open');setTimeout(()=>document.getElementById('p_name').focus(),50)}));
-  document.getElementById('mx').onclick=()=>modal.classList.remove('open');
-  modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('open')});
-  addEventListener('keydown',e=>{if(e.key==='Escape'){modal.classList.remove('open');sheet.classList.remove('open')}});
-  document.getElementById('pitchform').addEventListener('submit',e=>{
-    e.preventDefault();const d=new FormData(e.target);
-    const body=`Name: ${d.get('name')}\nEmail: ${d.get('email')}\nCompany: ${d.get('company')}\nStage: ${d.get('stage')}\n\nWhat we're building:\n${d.get('what')}\n\nLink: ${d.get('link')}`;
-    location.href='mailto:hello@tirla.vc?subject='+encodeURIComponent('Tirla Open — '+(d.get('company')||d.get('name')))+'&body='+encodeURIComponent(body);
-  });
+  addEventListener('keydown',e=>{if(e.key==='Escape'){sheet.classList.remove('open')}});
 
   /* reveal */
   const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target)}}),{threshold:.1});

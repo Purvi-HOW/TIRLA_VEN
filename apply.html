@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pitch Tirla — Tirla Ventures</title>
+<meta name="description" content="Build before it becomes obvious. We back founders before consensus forms. No perfect deck, no warm intro.">
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root{
+  --bg:#F7F6F2; --bg2:#FFFFFF; --panel:rgba(250,249,246,.9);
+  --ink:#0E0F14; --ink2:#3A3C46; --mute:#6B6E7A;
+  --line:rgba(14,15,20,.10); --line2:rgba(14,15,20,.28);
+  --red:#E0142F; --red2:#FF4A62; --glow:rgba(224,20,47,.28);
+  --disp:"Unbounded","Archivo Black",Impact,sans-serif;
+  --sans:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --gutter:clamp(20px,5vw,80px);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{background:var(--bg);color:var(--ink)}
+body{margin:0;font-family:var(--sans);font-weight:400;font-size:18px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+::selection{background:var(--red);color:#fff}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+h1,h2,h3{font-family:var(--disp);font-weight:700;margin:0;text-wrap:balance;text-transform:uppercase}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.wrap{padding-inline:var(--gutter);max-width:1000px;width:100%;margin-inline:auto;position:relative}
+.red{color:var(--red)}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:40;background:rgba(247,246,242,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.nav .inner{max-width:1500px;margin-inline:auto;padding-inline:var(--gutter);display:flex;align-items:center;justify-content:space-between;height:76px;gap:20px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand svg{width:30px;height:30px}
+.brand span{font-family:var(--disp);font-weight:900;font-size:18px;letter-spacing:.08em}
+.back{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);transition:.2s}
+.back:hover{color:var(--red)}
+
+/* hero */
+.hero{padding-block:clamp(56px,10vw,120px) clamp(30px,5vw,56px)}
+.hero h1{font-size:clamp(30px,6.2vw,64px);line-height:1;letter-spacing:-.02em;margin-top:16px}
+.hero .lede{font-size:clamp(19px,2.3vw,24px);color:var(--ink2);margin:26px 0 0;max-width:40ch}
+.nots{margin:30px 0 0;display:grid;gap:6px}
+.nots span{color:var(--mute);font-size:clamp(16px,1.9vw,18px)}
+.three{margin-top:38px;padding:clamp(24px,3.5vw,34px);background:var(--bg2);border:1px solid var(--line);border-left:2px solid var(--red);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%)}
+.three .mono{color:var(--red)}
+.three p{font-family:var(--disp);font-weight:700;text-transform:uppercase;font-size:clamp(17px,2.6vw,27px);line-height:1.25;margin:14px 0 0;letter-spacing:-.01em}
+.hero .tail{margin:32px 0 0;font-size:clamp(17px,2vw,20px);color:var(--ink)}
+.rule{height:1px;background:var(--line);margin-top:clamp(40px,6vw,64px)}
+
+/* form sections */
+form{display:block}
+.sec{padding-block:clamp(44px,6vw,76px);border-bottom:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;gap:16px;margin-bottom:clamp(26px,3.5vw,40px)}
+.sec-head .n{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--red)}
+.sec-head h2{font-size:clamp(20px,3.4vw,34px);letter-spacing:-.01em;line-height:1}
+.fields{display:grid;gap:clamp(24px,3vw,34px)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.4vw,26px)}
+.f{display:grid;gap:9px}
+.f label{font-family:var(--disp);font-weight:700;text-transform:uppercase;font-size:clamp(13px,1.5vw,15px);letter-spacing:.01em;line-height:1.35;color:var(--ink)}
+.f .hint{font-size:14px;line-height:1.5;color:var(--mute);font-style:italic;margin:-3px 0 2px}
+.f input[type=text],.f input[type=email],.f input[type=url],.f textarea{
+  background:var(--bg2);border:1px solid var(--line2);color:var(--ink);padding:14px 15px;font:inherit;font-size:16px;line-height:1.6;border-radius:0;width:100%;transition:border-color .2s,box-shadow .2s}
+.f input:focus,.f textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(224,20,47,.15)}
+.f textarea{min-height:120px;resize:vertical}
+.f textarea.tall{min-height:150px}
+.f input::placeholder,.f textarea::placeholder{color:rgba(107,110,122,.6)}
+
+/* radios */
+.choices{display:flex;flex-wrap:wrap;gap:10px}
+.choices label{display:inline-flex;align-items:center;gap:9px;padding:12px 18px;border:1px solid var(--line2);background:var(--bg2);cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);transition:.2s;user-select:none}
+.choices label:hover{border-color:var(--ink)}
+.choices input{appearance:none;-webkit-appearance:none;width:11px;height:11px;margin:0;border:1px solid var(--line2);border-radius:50%;transition:.2s;flex:0 0 11px}
+.choices label:has(input:checked){border-color:var(--red);color:var(--ink);box-shadow:inset 0 0 0 1px var(--red)}
+.choices input:checked{background:var(--red);border-color:var(--red);box-shadow:inset 0 0 0 2px var(--bg2)}
+.choices input:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+
+/* close */
+.close-sec{padding-block:clamp(44px,6vw,70px)}
+.signoff{display:grid;gap:12px;margin:clamp(30px,4vw,44px) 0 0}
+.signoff span{font-family:var(--disp);font-weight:700;text-transform:uppercase;font-size:clamp(15px,2vw,21px);line-height:1.3;color:var(--ink)}
+.signoff span.q{color:var(--red)}
+
+/* consent + submit */
+.consent{display:flex;gap:12px;align-items:flex-start;cursor:pointer;margin-top:clamp(28px,4vw,40px)}
+.consent input{appearance:none;-webkit-appearance:none;flex:0 0 19px;width:19px;height:19px;margin:2px 0 0;border:1px solid var(--line2);background:var(--bg2);display:grid;place-content:center;cursor:pointer;transition:.2s}
+.consent input:checked{background:var(--red);border-color:var(--red)}
+.consent input:checked::after{content:"";width:9px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translate(1px,-1px)}
+.consent input:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.consent span{font-size:14px;line-height:1.6;color:var(--mute)}
+.consent a{color:var(--red);text-decoration:underline;text-underline-offset:2px}
+.consent a:hover{color:var(--ink)}
+
+.submit-row{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;margin-top:clamp(26px,3.5vw,34px)}
+.btn{display:inline-flex;align-items:center;gap:12px;padding:19px 34px;background:var(--red);color:#fff;font-family:var(--disp);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));transition:.25s;border:0;cursor:pointer}
+.btn:hover:not(:disabled){background:var(--ink);color:#fff;box-shadow:0 0 40px var(--glow)}
+.btn:disabled{opacity:.5;cursor:wait}
+.saved{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);opacity:0;transition:opacity .3s}
+.saved.on{opacity:1}
+.err{display:none;margin-top:20px;padding:16px 18px;border:1px solid var(--red);border-left:2px solid var(--red);background:rgba(224,20,47,.05);color:var(--ink);font-size:15px}
+.err.on{display:block}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+/* validation */
+.fe{display:none;font-size:13.5px;line-height:1.5;color:var(--red);padding-left:12px;border-left:2px solid var(--red);margin-top:3px}
+.f.bad .fe{display:block}
+.f.bad input[type=text],.f.bad input[type=email],.f.bad textarea{border-color:var(--red);background:#fff}
+.f.bad .choices label{border-color:rgba(224,20,47,.55)}
+.f.ok input[type=text],.f.ok input[type=email],.f.ok textarea{border-color:var(--line2)}
+.summary{display:none;margin-top:22px;padding:15px 18px;border-left:2px solid var(--red);background:rgba(224,20,47,.05);color:var(--ink);font-size:15px}
+.summary.on{display:block}
+
+/* done */
+.done{display:none;padding-block:clamp(70px,12vw,150px);text-align:left}
+.done.on{display:block}
+.done h2{font-size:clamp(32px,6.5vw,68px);line-height:1;letter-spacing:-.02em;margin-top:16px}
+.done p{font-size:clamp(17px,2vw,20px);color:var(--ink2);max-width:46ch;margin:26px 0 0}
+.done .btn{margin-top:40px}
+
+/* footer */
+footer{border-top:1px solid var(--line);background:var(--bg);padding-block:36px;padding-bottom:calc(36px + env(safe-area-inset-bottom,0px))}
+footer .inner{max-width:1500px;margin-inline:auto;padding-inline:var(--gutter);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+footer a.mono{transition:color .2s}
+footer a.mono:hover{color:var(--ink)}
+
+@media(max-width:720px){
+  .two{grid-template-columns:1fr}
+  .nav .inner{height:64px}
+  body{font-size:17px}
+  .submit-row{flex-direction:column;align-items:stretch}
+  .submit-row .btn{justify-content:center}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="mark" viewBox="0 0 40 40">
+    <path d="M4 4h32v6H23v26h-6V10H4z" fill="currentColor"/>
+    <rect x="30" y="30" width="6" height="6" fill="#E0142F"/>
+  </symbol>
+</svg>
+
+<nav class="nav">
+  <div class="inner">
+    <a class="brand" href="index.html"><svg><use href="#mark"/></svg><span>TIRLA</span></a>
+    <a class="back" href="index.html">← Back to site</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<section class="hero" id="top">
+  <div class="mono">Tirla Open / Application</div>
+  <h1>Build before it<br>becomes <span class="red">obvious.</span></h1>
+  <p class="lede">We back founders before consensus forms.</p>
+  <div class="nots">
+    <span>You don't need the perfect deck.</span>
+    <span>You don't need impressive metrics.</span>
+    <span>You don't need a warm introduction.</span>
+  </div>
+  <div class="three">
+    <div class="mono">We want to understand three things</div>
+    <p>What do you see?<br>Why are you right?<br>Why are you the one to build it?</p>
+  </div>
+  <p class="tail">If you're building something ambitious, tell us early.</p>
+</section>
+
+<div class="rule"></div>
+
+<form id="app" novalidate>
+
+  <section class="sec">
+    <div class="sec-head"><span class="n">01 /</span><h2>You</h2></div>
+    <div class="fields">
+      <div class="two">
+        <div class="f"><label for="f_name">Your name</label><input type="text" id="f_name" name="name" autocomplete="name" required maxlength="120"></div>
+        <div class="f"><label for="f_email">Email</label><input type="email" id="f_email" name="email" autocomplete="email" required maxlength="320"></div>
+      </div>
+      <div class="two">
+        <div class="f"><label for="f_li">LinkedIn</label><input type="text" id="f_li" name="linkedin" placeholder="linkedin.com/in/…" required maxlength="300"></div>
+        <div class="f"><label for="f_loc">Where are you building from?</label><input type="text" id="f_loc" name="location" placeholder="City, country" required maxlength="120"></div>
+      </div>
+      <div class="f">
+        <label for="f_team">Who are you building with?</label>
+        <p class="hint">Names + LinkedIn profiles.</p>
+        <textarea id="f_team" name="team" required maxlength="4000"></textarea>
+      </div>
+      <div class="f">
+        <label for="f_unusual">What have you built, done or pursued that tells us something unusual about you?</label>
+        <p class="hint">Don't give us your résumé. Tell us the thing that best demonstrates how you operate.</p>
+        <textarea id="f_unusual" name="unusual" class="tall" required maxlength="8000"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="n">02 /</span><h2>The company</h2></div>
+    <div class="fields">
+      <div class="f">
+        <label for="f_what">What are you building?</label>
+        <p class="hint">One sentence.</p>
+        <input type="text" id="f_what" name="what_building" required maxlength="300">
+      </div>
+      <div class="f">
+        <label for="f_without">What happens today without your product?</label>
+        <textarea id="f_without" name="without_product" required maxlength="8000"></textarea>
+      </div>
+      <div class="f">
+        <label for="f_link">Show us what exists today.</label>
+        <p class="hint">Product, prototype, GitHub, Loom, Figma, research, website — anything works.</p>
+        <input type="text" id="f_link" name="link" placeholder="https://" required maxlength="500">
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="n">03 /</span><h2>The insight</h2></div>
+    <div class="fields">
+      <div class="f">
+        <label for="f_belief">What do you believe about this space that most smart people don't believe yet?</label>
+        <textarea id="f_belief" name="belief" class="tall" required maxlength="8000"></textarea>
+      </div>
+      <div class="f">
+        <label for="f_whynow">Why now?</label>
+        <p class="hint">What changed that makes this possible today?</p>
+        <textarea id="f_whynow" name="why_now" required maxlength="8000"></textarea>
+      </div>
+      <div class="f">
+        <label for="f_ten">If you're right, what does this company become in 10 years?</label>
+        <textarea id="f_ten" name="ten_years" required maxlength="8000"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="n">04 /</span><h2>The signal</h2></div>
+    <div class="fields">
+      <div class="f">
+        <label for="f_evidence">What's the strongest evidence that you're onto something?</label>
+        <p class="hint">Users, revenue, experiments, research, customer conversations, technical breakthroughs — whatever matters at your stage.</p>
+        <textarea id="f_evidence" name="evidence" class="tall" required maxlength="8000"></textarea>
+      </div>
+      <div class="f">
+        <label for="f_learned">What have you learned in the last 30 days that changed how you're building the company?</label>
+        <textarea id="f_learned" name="learned_30d" required maxlength="8000"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="n">05 /</span><h2>The founders</h2></div>
+    <div class="fields">
+      <div class="f">
+        <label for="f_whyyou">Why are you the people who should build this?</label>
+        <textarea id="f_whyyou" name="why_you" required maxlength="8000"></textarea>
+      </div>
+      <div class="f">
+        <label for="f_keep">What would make you keep building even if fundraising disappeared for the next 18 months?</label>
+        <textarea id="f_keep" name="keep_building" required maxlength="8000"></textarea>
+      </div>
+      <div class="f">
+        <label for="f_fail">What's the biggest reason this company might fail?</label>
+        <textarea id="f_fail" name="why_fail" required maxlength="8000"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="n">06 /</span><h2>The round</h2></div>
+    <div class="fields">
+      <div class="f">
+        <label>Where are you today?</label>
+        <div class="choices">
+          <label><input type="radio" name="stage" value="Idea" required>Idea</label>
+          <label><input type="radio" name="stage" value="Prototype">Prototype</label>
+          <label><input type="radio" name="stage" value="Launched">Launched</label>
+          <label><input type="radio" name="stage" value="Early revenue">Early revenue</label>
+          <label><input type="radio" name="stage" value="Scaling">Scaling</label>
+        </div>
+      </div>
+      <div class="f">
+        <label>Have you raised capital before?</label>
+        <div class="choices">
+          <label><input type="radio" name="raised_before" value="Yes" required>Yes</label>
+          <label><input type="radio" name="raised_before" value="No">No</label>
+        </div>
+      </div>
+      <div class="f">
+        <label for="f_amount">How much are you raising now?</label>
+        <input type="text" id="f_amount" name="raising_amount" required maxlength="120">
+      </div>
+      <div class="f">
+        <label for="f_prove">What will this round allow you to prove over the next 12–18 months?</label>
+        <textarea id="f_prove" name="prove_next" required maxlength="8000"></textarea>
+      </div>
+    </div>
+  </section>
+
+  <section class="close-sec">
+    <div class="sec-head"><h2>One last thing</h2></div>
+    <div class="fields">
+      <div class="f">
+        <label for="f_else">What didn't we ask that we should know?</label>
+        <textarea id="f_else" name="anything_else" class="tall" required maxlength="8000"></textarea>
+      </div>
+    </div>
+
+    <div class="signoff">
+      <span>No warm intro required.</span>
+      <span>No perfect deck required.</span>
+      <span class="q">If we believe before everyone else does, that's the point.</span>
+    </div>
+
+    <div class="hp" aria-hidden="true"><label>Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+
+    <label class="consent"><input type="checkbox" id="f_consent" required>
+      <span>I agree Tirla may store and use these details to evaluate my application and to get back to me, as described in the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>. Tirla treats what I send as confidential.</span></label>
+
+    <div class="err" id="err"></div>
+
+    <div class="submit-row">
+      <span class="saved mono" id="saved">Draft saved in this browser</span>
+      <button class="btn" type="submit" id="go">Pitch Tirla ↗</button>
+    </div>
+  </section>
+
+</form>
+
+<section class="done" id="done">
+  <div class="mono">Received</div>
+  <h2>We've got it.</h2>
+  <p>Your application is with the investment team. We read every serious one ourselves, and you'll hear back directly — not from a template.</p>
+  <p>If it's a fit, that's the start of a conversation. If it isn't, we'll still tell you.</p>
+  <a class="btn" href="index.html">Back to Tirla ↗</a>
+</section>
+
+</div>
+
+<footer>
+  <div class="inner">
+    <a class="brand" href="index.html"><svg><use href="#mark"/></svg><span>TIRLA</span></a>
+    <span class="mono">Tirla Ventures · Bengaluru · N 12°58′ E 77°35′</span>
+    <a class="mono" href="privacy.html">Privacy</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  /* ---- Supabase: paste these two values from Settings -> API ---- */
+  const SUPABASE_URL = 'PASTE_YOUR_PROJECT_URL';   /* e.g. https://abcdefgh.supabase.co */
+  const SUPABASE_KEY = 'PASTE_YOUR_PUBLISHABLE_KEY';
+  const NOTICE_VERSION = '2026-10-08';
+  /* --------------------------------------------------------------- */
+
+  const form=document.getElementById('app'), btn=document.getElementById('go'),
+        err=document.getElementById('err'), done=document.getElementById('done'),
+        savedTag=document.getElementById('saved'), KEY='tirla.application.draft';
+  const configured = !SUPABASE_URL.startsWith('PASTE_') && !SUPABASE_KEY.startsWith('PASTE_');
+
+  /* ---------- helpers ---------- */
+  const LET="\\p{L}\\p{M}";                                   /* any script: Latin, Devanagari, Tamil… */
+  const nameRe   = new RegExp("^["+LET+"][" +LET+ "'\u2019.\\-\\s]*$","u");
+  const placeRe  = new RegExp("^["+LET+"][" +LET+ "\\s,.'\u2019\\-()]*$","u");
+  const words = v => v.trim().split(/\s+/).filter(Boolean).length;
+
+  /* catches "aaaaaaaa", "....", "test test test test" */
+  const lowEffort = v => {
+    const t=v.trim().toLowerCase();
+    if(new Set(t.replace(/\s/g,'')).size < 5) return true;
+    const w=t.split(/\s+/).filter(Boolean);
+    return w.length > 3 && new Set(w).size <= 2;
+  };
+
+  const prose = (min, what) => v => {
+    const n=words(v);
+    if(n < min) return 'Please give us a bit more — at least '+min+' words. You\u2019ve written '+n+'.';
+    if(lowEffort(v)) return 'That doesn\u2019t look like a real answer. Tell us '+what+'.';
+    return null;
+  };
+
+  /* ---------- the rules ---------- */
+  /* live  : checked on every keystroke (an unambiguous wrong character) */
+  /* check : checked when you leave the field, and on submit             */
+  const RULES = {
+    name:{
+      live: v => /\d/.test(v) ? 'Names don\u2019t contain numbers \u2014 letters only.' : null,
+      check: v => v.length<2 ? 'Please enter your name.'
+                : !nameRe.test(v) ? 'Use letters only \u2014 no numbers or symbols.'
+                : null },
+
+    email:{
+      live: v => /\s/.test(v) ? 'An email address can\u2019t contain spaces.' : null,
+      check: v => !/^[^\s@]+@[^\s@]+\.[^\s@.]{2,}$/.test(v)
+                ? 'That isn\u2019t a complete email address \u2014 it should look like you@company.com.'
+                : null },
+
+    linkedin:{
+      check: v => {
+        const u=v.trim().replace(/^https?:\/\//i,'').replace(/^www\./i,'');
+        return /^([a-z]{2,3}\.)?linkedin\.com\/(in|pub|company|school)\/[^\s\/]+/i.test(u) ? null
+             : 'Paste your LinkedIn profile link \u2014 e.g. linkedin.com/in/yourname.'; } },
+
+    location:{
+      live: v => /\d/.test(v) ? 'A city and country shouldn\u2019t contain numbers.' : null,
+      check: v => v.length<2 ? 'Tell us where you\u2019re building from.'
+                : !placeRe.test(v) ? 'City and country only \u2014 e.g. \u201cBengaluru, India\u201d.'
+                : null },
+
+    team:{ check: v => v.trim().length<10
+                ? 'Tell us who you\u2019re building with \u2014 names and LinkedIn links. If you\u2019re solo, just say so.'
+                : null },
+
+    unusual:{ check: prose(15,'the one thing that best shows how you operate') },
+
+    what_building:{
+      check: v => words(v)<4 ? 'One sentence, but a real one \u2014 at least a few words.'
+                : v.trim().length>300 ? 'Keep this to one sentence. There\u2019s room to explain below.'
+                : lowEffort(v) ? 'Tell us what you\u2019re actually building.'
+                : null },
+
+    without_product:{ check: prose(8,'what people do today instead') },
+
+    link:{
+      check: v => {
+        const u=v.trim().replace(/^https?:\/\//i,'');
+        return /^[^\s\/.]+(\.[^\s\/.]+)+(\/\S*)?$/.test(u) ? null
+             : 'Paste a working link \u2014 a site, GitHub repo, Loom, Figma or deck.'; } },
+
+    belief:{        check: prose(15,'what you believe that others don\u2019t') },
+    why_now:{       check: prose(10,'what changed to make this possible now') },
+    ten_years:{     check: prose(10,'what this becomes if you\u2019re right') },
+    evidence:{      check: prose(12,'your strongest evidence so far') },
+    learned_30d:{   check: prose(12,'what you learned recently') },
+    why_you:{       check: prose(12,'why it\u2019s you') },
+    keep_building:{ check: prose(10,'what keeps you building') },
+    why_fail:{      check: prose(10,'the honest answer') },
+
+    raising_amount:{
+      check: v => !/\d/.test(v)
+                ? 'Include a number \u2014 e.g. \u201c\u20b94 crore\u201d or \u201c$750k\u201d. If you haven\u2019t decided, give us your best estimate.'
+                : null },
+
+    prove_next:{    check: prose(10,'what this round buys you') },
+    anything_else:{ check: prose(5,'anything we missed \u2014 or write \u201cnothing\u201d') },
+
+    stage:{         check: v => v ? null : 'Pick where you are today.' },
+    raised_before:{ check: v => v ? null : 'Let us know either way.' }
+  };
+
+  /* ---------- wiring ---------- */
+  const EMPTY='This one\u2019s required.';
+  const fieldOf = el => el.closest('.f');
+  const valueOf = nm => {
+    const e=form.elements[nm];
+    if(!e) return '';
+    if(e instanceof RadioNodeList) return e.value;
+    return e.value;
+  };
+
+  function errBox(f){
+    let p=f.querySelector('.fe');
+    if(!p){ p=document.createElement('p'); p.className='fe'; f.appendChild(p); }
+    return p;
+  }
+  function setErr(nm,msg){
+    const e=form.elements[nm]; if(!e) return;
+    const el=(e instanceof RadioNodeList)?e[0]:e;
+    const f=fieldOf(el); if(!f) return;
+    const box=errBox(f);
+    if(msg){ box.textContent=msg; f.classList.add('bad'); f.classList.remove('ok');
+             if(!(e instanceof RadioNodeList)) el.setAttribute('aria-invalid','true'); }
+    else   { f.classList.remove('bad'); box.textContent='';
+             if(valueOf(nm).trim()) f.classList.add('ok');
+             if(!(e instanceof RadioNodeList)) el.removeAttribute('aria-invalid'); }
+  }
+  function validate(nm,{live=false}={}){
+    const r=RULES[nm]; if(!r) return true;
+    const raw=valueOf(nm), v=raw.trim();
+    if(live){                                   /* typing: only flag clear mistakes */
+      const m=r.live?r.live(raw):null;
+      if(m){ setErr(nm,m); return false; }
+      if(touched.has(nm)){ return validate(nm); }
+      setErr(nm,null); return true;
+    }
+    if(!v){ setErr(nm,EMPTY); return false; }
+    const m=(r.live&&r.live(raw)) || (r.check&&r.check(v));
+    setErr(nm,m||null);
+    return !m;
+  }
+
+  const touched=new Set();
+  Object.keys(RULES).forEach(nm=>{
+    const e=form.elements[nm]; if(!e) return;
+    const list=(e instanceof RadioNodeList)?[...e]:[e];
+    list.forEach(el=>{
+      el.addEventListener('blur',()=>{ if(el.value||touched.has(nm)){touched.add(nm); validate(nm);} });
+      el.addEventListener('input',()=>validate(nm,{live:true}));
+      el.addEventListener('change',()=>{ touched.add(nm); validate(nm); });
+    });
+  });
+
+  /* ---------- draft: a 22-field form shouldn't punish a closed tab ---------- */
+  let t;
+  try{
+    const d=JSON.parse(localStorage.getItem(KEY)||'{}');
+    Object.entries(d).forEach(([k,v])=>{
+      const els=form.elements[k]; if(!els) return;
+      if(els instanceof RadioNodeList){[...els].forEach(r=>{if(r.value===v)r.checked=true})}
+      else els.value=v;
+    });
+  }catch(e){}
+
+  const save=()=>{
+    try{
+      const o={}; new FormData(form).forEach((v,k)=>{if(k!=='website')o[k]=v});
+      localStorage.setItem(KEY,JSON.stringify(o));
+      savedTag.classList.add('on'); clearTimeout(t);
+      t=setTimeout(()=>savedTag.classList.remove('on'),2200);
+    }catch(e){}
+  };
+  form.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(save,700)});
+  form.addEventListener('change',save);
+
+  /* ---------- submit ---------- */
+  const summary=document.createElement('div');
+  summary.className='summary'; summary.id='summary';
+  document.querySelector('.consent').before(summary);
+  const fail=m=>{err.textContent=m;err.classList.add('on');err.scrollIntoView({block:'center'})};
+
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();
+    err.classList.remove('on'); summary.classList.remove('on');
+
+    if(form.elements['website'].value) return;        /* honeypot: silent no-op */
+
+    let first=null, bad=0;
+    Object.keys(RULES).forEach(nm=>{ touched.add(nm);
+      if(!validate(nm)){ bad++; if(!first) first=nm; } });
+
+    const consent=document.getElementById('f_consent');
+    if(!consent.checked){ bad++; if(!first) first='__consent'; }
+
+    if(bad){
+      summary.textContent = bad===1
+        ? 'One answer still needs attention \u2014 it\u2019s marked in red below.'
+        : bad+' answers still need attention. They\u2019re marked in red above.';
+      summary.classList.add('on');
+      const el = first==='__consent' ? consent
+               : (form.elements[first] instanceof RadioNodeList ? form.elements[first][0] : form.elements[first]);
+      el.scrollIntoView({block:'center',behavior:'smooth'});
+      setTimeout(()=>el.focus({preventScroll:true}),320);
+      return;
+    }
+
+    if(!configured){
+      fail('This form isn\u2019t connected to its database yet. Add your Supabase project URL and publishable key at the top of the script in apply.html.');
+      return;
+    }
+
+    const row={}; new FormData(form).forEach((v,k)=>{if(k!=='website')row[k]=String(v).trim()});
+    row.consent_at=new Date().toISOString();
+    row.notice_version=NOTICE_VERSION;
+
+    btn.disabled=true; btn.textContent='Sending\u2026';
+    try{
+      const r=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/applications',{
+        method:'POST',
+        headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,
+                 'Content-Type':'application/json',Prefer:'return=minimal'},
+        body:JSON.stringify(row)
+      });
+      if(!r.ok) throw new Error(await r.text()||('HTTP '+r.status));
+      try{localStorage.removeItem(KEY)}catch(e){}
+      form.style.display='none';
+      document.querySelector('.hero').style.display='none';
+      document.querySelector('.rule').style.display='none';
+      done.classList.add('on');
+      window.scrollTo({top:0,behavior:'smooth'});
+    }catch(ex){
+      btn.disabled=false; btn.textContent='Pitch Tirla \u2197';
+      fail('We couldn\u2019t send that \u2014 your answers are saved in this browser, so nothing is lost. Try again, or email it to hello@tirla.vc. ('+ex.message.slice(0,140)+')');
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
