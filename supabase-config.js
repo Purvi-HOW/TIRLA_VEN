@@ -11,5 +11,5 @@
  * and this file is public on GitHub.
  * --------------------------------------------------------------- */
 
-const SUPABASE_URL             = 'PASTE_YOUR_PROJECT_URL';        /* e.g. https://abcdefgh.supabase.co */
-const SUPABASE_PUBLISHABLE_KEY = 'PASTE_YOUR_PUBLISHABLE_KEY';
+const SUPABASE_URL             = 'https://izmxzhibmjkjkmgyznaq.supabase.co';        /* e.g. https://abcdefgh.supabase.co */
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_otZwa7wz57hS00O0QNPXVg_B6Zi5xbf';
