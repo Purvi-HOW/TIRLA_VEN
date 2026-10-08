@@ -3,6 +3,7 @@ TIRLA VENTURES WEBSITE
 FILES
   index.html          The main site. Self-contained (3D, fonts, animations inside).
   apply.html          The Tirla Open application. Needs Supabase keys — see below.
+  supabase-config.js  Your Supabase URL and public key. Edit this one file.
   privacy.html        Privacy policy.
   fonts.css           Brand fonts, shared by apply.html and privacy.html.
   supabase-setup.sql  Run once in Supabase to create the applications table.
@@ -18,8 +19,8 @@ BEFORE THE APPLICATION FORM WORKS
   2. Open supabase-setup.sql, paste it into Supabase > SQL Editor, run it.
   3. In Supabase > Settings > API, copy the Project URL and the public
      (anon / publishable) key. Never the service_role key.
-  4. Open apply.html, find SUPABASE_URL and SUPABASE_KEY near the bottom,
-     and paste them in.
+  4. Open supabase-config.js and paste both values in. That is the only
+     file you need to edit — leave apply.html alone.
   Until that is done the form will show a message instead of submitting.
 
   You read applications in Supabase > Table Editor > applications.

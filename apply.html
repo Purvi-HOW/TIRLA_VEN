@@ -353,18 +353,26 @@ footer a.mono:hover{color:var(--ink)}
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+  /* Keys live in supabase-config.js. Guarded so an unconfigured site, or a
+     blocked CDN, gives the applicant a clear message instead of a dead button. */
+  const supabaseReady = !!(window.supabase
+    && typeof SUPABASE_URL === 'string' && !SUPABASE_URL.startsWith('PASTE_')
+    && typeof SUPABASE_PUBLISHABLE_KEY === 'string' && !SUPABASE_PUBLISHABLE_KEY.startsWith('PASTE_'));
+  const supabaseClient = supabaseReady
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+    : null;
+</script>
+
 <script>
 (function(){
-  /* ---- Supabase: paste these two values from Settings -> API ---- */
-  const SUPABASE_URL = 'PASTE_YOUR_PROJECT_URL';   /* e.g. https://abcdefgh.supabase.co */
-  const SUPABASE_KEY = 'PASTE_YOUR_PUBLISHABLE_KEY';
   const NOTICE_VERSION = '2026-10-08';
-  /* --------------------------------------------------------------- */
 
   const form=document.getElementById('app'), btn=document.getElementById('go'),
         err=document.getElementById('err'), done=document.getElementById('done'),
         savedTag=document.getElementById('saved'), KEY='tirla.application.draft';
-  const configured = !SUPABASE_URL.startsWith('PASTE_') && !SUPABASE_KEY.startsWith('PASTE_');
 
   /* ---------- helpers ---------- */
   const LET="\\p{L}\\p{M}";                                   /* any script: Latin, Devanagari, Tamil… */
@@ -573,8 +581,10 @@ footer a.mono:hover{color:var(--ink)}
       return;
     }
 
-    if(!configured){
-      fail('This form isn\u2019t connected to its database yet. Add your Supabase project URL and publishable key at the top of the script in apply.html.');
+    if(!supabaseClient){
+      fail(!window.supabase
+        ? 'We couldn\u2019t load part of this page. Check your connection and refresh, or email your answers to hello@tirla.vc.'
+        : 'This form isn\u2019t connected to its database yet. Add your project URL and publishable key to supabase-config.js.');
       return;
     }
 
@@ -584,13 +594,8 @@ footer a.mono:hover{color:var(--ink)}
 
     btn.disabled=true; btn.textContent='Sending\u2026';
     try{
-      const r=await fetch(SUPABASE_URL.replace(/\/$/,'')+'/rest/v1/applications',{
-        method:'POST',
-        headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,
-                 'Content-Type':'application/json',Prefer:'return=minimal'},
-        body:JSON.stringify(row)
-      });
-      if(!r.ok) throw new Error(await r.text()||('HTTP '+r.status));
+      const {error}=await supabaseClient.from('applications').insert([row]);
+      if(error) throw new Error(error.message||'Insert failed');
       try{localStorage.removeItem(KEY)}catch(e){}
       form.style.display='none';
       document.querySelector('.hero').style.display='none';
