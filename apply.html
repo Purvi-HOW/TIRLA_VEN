@@ -588,13 +588,44 @@ footer a.mono:hover{color:var(--ink)}
       return;
     }
 
-    const row={}; new FormData(form).forEach((v,k)=>{if(k!=='website')row[k]=String(v).trim()});
-    row.consent_at=new Date().toISOString();
-    row.notice_version=NOTICE_VERSION;
+    /* form field -> database column. Left side is this page, right side is
+       the applications table in Supabase. Keep them in step. */
+    const COLUMN={
+      name:'founder_name',            email:'founder_email',
+      linkedin:'founder_linkedin',    location:'founder_location',
+      team:'cofounders',              unusual:'unusual_founder_story',
+      company_name:'company_name',    company_website:'company_website',
+      what_building:'what_are_you_building',
+      without_product:'current_alternative',
+      link:'product_link',            belief:'non_obvious_belief',
+      why_now:'why_now',              ten_years:'ten_year_vision',
+      evidence:'strongest_evidence',  learned_30d:'recent_learning',
+      why_you:'why_you',              keep_building:'build_without_funding',
+      why_fail:'biggest_failure_risk',
+      stage:'stage',                  raised_before:'raised_before',
+      raising_amount:'amount_raising',prove_next:'round_goal',
+      anything_else:'anything_else'
+    };
+
+    const row={};
+    new FormData(form).forEach((v,k)=>{
+      const col=COLUMN[k]; if(!col) return;                 /* skips the honeypot */
+      row[col]=String(v).trim();
+    });
+    row.raised_before = row.raised_before==='Yes';          /* column is boolean */
+    row.consent_given = true;
+    row.consent_given_at = new Date().toISOString();
+    row.notice_version = NOTICE_VERSION;
 
     btn.disabled=true; btn.textContent='Sending\u2026';
     try{
-      const {error}=await supabaseClient.from('applications').insert([row]);
+      let {error}=await supabaseClient.from('applications').insert([row]);
+      /* notice_version is optional: if that column hasn't been added yet, send
+         the application without it rather than losing the whole submission. */
+      if(error && /notice_version/.test(error.message||'')){
+        const {notice_version,...rest}=row;
+        ({error}=await supabaseClient.from('applications').insert([rest]));
+      }
       if(error) throw new Error(error.message||'Insert failed');
       try{localStorage.removeItem(KEY)}catch(e){}
       form.style.display='none';

@@ -1,91 +1,81 @@
--- Tirla Ventures — application store
--- Run once in Supabase → SQL Editor. Create the project in the MUMBAI (ap-south-1)
--- region first; region cannot be changed afterwards.
+-- Tirla Ventures — applications table
+--
+-- This file documents the table that is LIVE in Supabase, so the form and the
+-- database stay in step. The table already exists; you do not need to run the
+-- CREATE below unless you are rebuilding from scratch in a new project.
+--
+-- What you DO still need to run is the HARDENING block at the bottom.
 
 create table if not exists public.applications (
-  id              uuid primary key default gen_random_uuid(),
-  created_at      timestamptz not null default now(),
+  id uuid primary key default gen_random_uuid(),
 
-  -- 01 / you
-  name            text not null,
-  email           text not null,
-  linkedin        text not null,
-  location        text not null,
-  team            text not null,
-  unusual         text not null,
+  -- 01 / YOU
+  founder_name           text not null,
+  founder_email          text not null,
+  founder_linkedin       text,
+  founder_location       text,
+  cofounders             text,
+  unusual_founder_story  text,
 
-  -- 02 / the company
-  company_name    text not null,
-  company_website text not null,
-  what_building   text not null,
-  without_product text not null,
-  link            text not null,
+  -- 02 / THE COMPANY
+  company_name           text not null,
+  company_website        text not null,
+  what_are_you_building  text not null,
+  current_alternative    text,
+  product_link           text,
 
-  -- 03 / the insight
-  belief          text not null,
-  why_now         text not null,
-  ten_years       text not null,
+  -- 03 / THE INSIGHT
+  non_obvious_belief     text,
+  why_now                text,
+  ten_year_vision        text,
 
-  -- 04 / the signal
-  evidence        text not null,
-  learned_30d     text not null,
+  -- 04 / THE SIGNAL
+  strongest_evidence     text,
+  recent_learning        text,
 
-  -- 05 / the founders
-  why_you         text not null,
-  keep_building   text not null,
-  why_fail        text not null,
+  -- 05 / THE FOUNDERS
+  why_you                text,
+  build_without_funding  text,
+  biggest_failure_risk   text,
 
-  -- 06 / the round
-  stage           text not null,
-  raised_before   text not null,
-  raising_amount  text not null,
-  prove_next      text not null,
+  -- 06 / THE ROUND
+  stage                  text,
+  raised_before          boolean,
+  amount_raising         text,
+  round_goal             text,
 
-  -- one last thing
-  anything_else   text not null,
+  -- ONE LAST THING
+  anything_else          text,
 
-  -- consent record: who agreed, when, and to which version of the notice
-  consent_at      timestamptz not null,
-  notice_version  text not null,
+  -- CONSENT
+  consent_given          boolean not null default false,
+  consent_given_at       timestamptz,
 
-  -- your workflow
-  status          text not null default 'new'
+  -- SYSTEM
+  status                 text not null default 'new',
+  submitted_at           timestamptz not null default now(),
+  created_at             timestamptz not null default now(),
+  updated_at             timestamptz not null default now()
 );
 
--- size limits, so a public key can't be used to dump megabytes into the table
+
+-- ===========================================================================
+-- HARDENING — run this block once. All of it is safe to re-run.
+-- ===========================================================================
+
+-- 1. Which version of the privacy notice the founder agreed to. Without this
+--    you can show WHEN someone consented but not WHAT they consented to.
+--    The form sends it if the column exists and omits it if it doesn't, so
+--    adding this never breaks anything.
 alter table public.applications
-  add constraint len_name     check (char_length(name)          <= 200),
-  add constraint len_email    check (char_length(email)         <= 320),
-  add constraint len_linkedin check (char_length(linkedin)      <= 500),
-  add constraint len_location check (char_length(location)      <= 200),
-  add constraint len_link     check (char_length(link)          <= 1000),
-  add constraint len_coname   check (char_length(company_name)  <= 200),
-  add constraint len_cosite   check (char_length(company_website) <= 500),
-  add constraint len_stage    check (char_length(stage)         <= 40),
-  add constraint len_raised   check (char_length(raised_before) <= 10),
-  add constraint len_amount   check (char_length(raising_amount)<= 200),
-  add constraint len_long     check (
-       char_length(team)            <= 4000
-   and char_length(unusual)         <= 8000
-   and char_length(what_building)   <= 2000
-   and char_length(without_product) <= 8000
-   and char_length(belief)          <= 8000
-   and char_length(why_now)         <= 8000
-   and char_length(ten_years)       <= 8000
-   and char_length(evidence)        <= 8000
-   and char_length(learned_30d)     <= 8000
-   and char_length(why_you)         <= 8000
-   and char_length(keep_building)   <= 8000
-   and char_length(why_fail)        <= 8000
-   and char_length(prove_next)      <= 8000
-   and char_length(anything_else)   <= 8000
-  );
+  add column if not exists notice_version text;
 
-create index if not exists applications_created_at_idx
-  on public.applications (created_at desc);
-
--- Row Level Security: the public key may INSERT and nothing else.
--- With no select/update/delete policy, that key cannot read a single row back.
+-- 2. Row Level Security. THIS IS THE IMPORTANT ONE.
+--    The key in supabase-config.js is public — it is in the page source and on
+--    GitHub. RLS is the only thing stopping anyone from reading every
+--    application you have ever received. With the policy below that key can
+--    INSERT and nothing else: no select, no update, no delete.
+--    You read applications in the dashboard, which bypasses RLS.
 alter table public.applications enable row level security;
 
 drop policy if exists "public can apply" on public.applications;
@@ -95,27 +85,48 @@ create policy "public can apply"
   to anon
   with check (true);
 
--- You read submissions in the dashboard Table Editor, which uses the service
--- role and bypasses RLS. Never put the service role key in a web page.
+-- 3. Size limits, so nobody can use the public key to push megabytes into the
+--    table. These match the maxlength attributes on the form.
+alter table public.applications
+  drop constraint if exists applications_length_limits;
+alter table public.applications
+  add constraint applications_length_limits check (
+       char_length(founder_name)          <= 120
+   and char_length(founder_email)         <= 320
+   and char_length(founder_linkedin)      <= 300
+   and char_length(founder_location)      <= 120
+   and char_length(company_name)          <= 200
+   and char_length(company_website)       <= 300
+   and char_length(what_are_you_building) <= 300
+   and char_length(amount_raising)        <= 120
+   and char_length(cofounders)            <= 4000
+   and char_length(coalesce(unusual_founder_story,'')) <= 8000
+   and char_length(coalesce(current_alternative,''))   <= 8000
+   and char_length(coalesce(product_link,''))          <= 500
+   and char_length(coalesce(non_obvious_belief,''))    <= 8000
+   and char_length(coalesce(why_now,''))               <= 8000
+   and char_length(coalesce(ten_year_vision,''))       <= 8000
+   and char_length(coalesce(strongest_evidence,''))    <= 8000
+   and char_length(coalesce(recent_learning,''))       <= 8000
+   and char_length(coalesce(why_you,''))               <= 8000
+   and char_length(coalesce(build_without_funding,'')) <= 8000
+   and char_length(coalesce(biggest_failure_risk,''))  <= 8000
+   and char_length(coalesce(round_goal,''))            <= 8000
+   and char_length(coalesce(anything_else,''))         <= 8000
+  );
+
+create index if not exists applications_submitted_at_idx
+  on public.applications (submitted_at desc);
 
 
--- ---------------------------------------------------------------------------
--- RETENTION: makes the privacy policy's 24-month promise self-enforcing.
--- Run after enabling the pg_cron extension (Database → Extensions → pg_cron).
--- ---------------------------------------------------------------------------
+-- ===========================================================================
+-- RETENTION — makes the privacy policy's 24-month promise self-enforcing.
+-- Enable pg_cron first (Database -> Extensions -> pg_cron), then uncomment.
+-- ===========================================================================
 -- select cron.schedule(
 --   'purge-old-applications',
 --   '0 3 1 * *',                      -- 03:00 on the 1st of each month
 --   $$ delete from public.applications
 --      where status in ('new','passed')
---        and created_at < now() - interval '24 months' $$
+--        and submitted_at < now() - interval '24 months' $$
 -- );
-
-
--- ---------------------------------------------------------------------------
--- Already ran the script above before these two columns existed? Run this
--- instead of recreating the table:
--- ---------------------------------------------------------------------------
--- alter table public.applications
---   add column if not exists company_name    text not null default '',
---   add column if not exists company_website text not null default '';
