@@ -15,6 +15,8 @@ create table if not exists public.applications (
   unusual         text not null,
 
   -- 02 / the company
+  company_name    text not null,
+  company_website text not null,
   what_building   text not null,
   without_product text not null,
   link            text not null,
@@ -57,6 +59,8 @@ alter table public.applications
   add constraint len_linkedin check (char_length(linkedin)      <= 500),
   add constraint len_location check (char_length(location)      <= 200),
   add constraint len_link     check (char_length(link)          <= 1000),
+  add constraint len_coname   check (char_length(company_name)  <= 200),
+  add constraint len_cosite   check (char_length(company_website) <= 500),
   add constraint len_stage    check (char_length(stage)         <= 40),
   add constraint len_raised   check (char_length(raised_before) <= 10),
   add constraint len_amount   check (char_length(raising_amount)<= 200),
@@ -106,3 +110,12 @@ create policy "public can apply"
 --      where status in ('new','passed')
 --        and created_at < now() - interval '24 months' $$
 -- );
+
+
+-- ---------------------------------------------------------------------------
+-- Already ran the script above before these two columns existed? Run this
+-- instead of recreating the table:
+-- ---------------------------------------------------------------------------
+-- alter table public.applications
+--   add column if not exists company_name    text not null default '',
+--   add column if not exists company_website text not null default '';

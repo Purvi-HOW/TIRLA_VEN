@@ -59,7 +59,7 @@ form{display:block}
 .sec-head .n{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--red)}
 .sec-head h2{font-size:clamp(20px,3.4vw,34px);letter-spacing:-.01em;line-height:1}
 .fields{display:grid;gap:clamp(24px,3vw,34px)}
-.two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.4vw,26px)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:clamp(18px,2.4vw,26px);align-items:start}
 .f{display:grid;gap:9px}
 .f label{font-family:var(--disp);font-weight:700;text-transform:uppercase;font-size:clamp(13px,1.5vw,15px);letter-spacing:.01em;line-height:1.35;color:var(--ink)}
 .f .hint{font-size:14px;line-height:1.5;color:var(--mute);font-style:italic;margin:-3px 0 2px}
@@ -201,6 +201,10 @@ footer a.mono:hover{color:var(--ink)}
   <section class="sec">
     <div class="sec-head"><span class="n">02 /</span><h2>The company</h2></div>
     <div class="fields">
+      <div class="two">
+        <div class="f"><label for="f_coname">Company name</label><input type="text" id="f_coname" name="company_name" placeholder="Working name is fine" required maxlength="200"></div>
+        <div class="f"><label for="f_cosite">Company website</label><input type="text" id="f_cosite" name="company_website" placeholder="https:// — or “none yet”" required maxlength="300"></div>
+      </div>
       <div class="f">
         <label for="f_what">What are you building?</label>
         <p class="hint">One sentence.</p>
@@ -416,6 +420,18 @@ footer a.mono:hover{color:var(--ink)}
                 : null },
 
     unusual:{ check: prose(15,'the one thing that best shows how you operate') },
+
+    company_name:{
+      check: v => v.trim().length<2 ? 'Enter your company or project name \u2014 a working name is fine.'
+                : null },
+
+    company_website:{
+      check: v => {
+        const t=v.trim().toLowerCase().replace(/\.$/,'');
+        if(/^(none|none yet|not yet|no website|nothing yet|n\/a|na|tbd|coming soon|in progress)$/.test(t)) return null;
+        const u=v.trim().replace(/^https?:\/\//i,'');
+        return /^[^\s\/.]+(\.[^\s\/.]+)+(\/\S*)?$/.test(u) ? null
+             : 'Paste your website URL \u2014 or write \u201cnone yet\u201d if you don\u2019t have one.'; } },
 
     what_building:{
       check: v => words(v)<4 ? 'One sentence, but a real one \u2014 at least a few words.'
