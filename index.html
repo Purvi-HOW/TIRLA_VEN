@@ -198,6 +198,8 @@ section.s.panel{background:var(--panel);backdrop-filter:blur(8px);-webkit-backdr
 .close .rowc>div{border:1px solid var(--line);background:rgba(255,255,255,.82);padding:30px}
 .close .rowc h3{font-size:clamp(16px,1.5vw,22px);margin-bottom:10px}
 .close .rowc p{color:var(--ink2);margin:0 0 24px;max-width:40ch;font-size:16.5px}
+.close .rowc .soon{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.close .rowc .soon::before{content:"";width:6px;height:6px;background:var(--red);flex:0 0 6px}
 @media (max-width:760px){.close .rowc{grid-template-columns:1fr}}
 
 /* footer */
@@ -380,7 +382,7 @@ footer a.mono:hover{color:var(--ink)}
     <div class="rv" style="margin-top:36px;display:flex;gap:14px;flex-wrap:wrap"><a class="btn" href="apply.html">Pitch Tirla ↗</a><a class="btn ghost" href="#thesis">Read the thesis</a></div>
     <div class="rowc rv">
       <div><h3>Partner with Tirla</h3><p>For investors who want early access to India's next generation of founders. Tirla Circle is by invitation.</p><a class="btn ghost" href="mailto:hello@tirla.vc?subject=Tirla%20Circle%20%E2%80%94%20investor%20enquiry">Investor enquiries ↗</a></div>
-      <div><h3>Follow the signal</h3><p>Essays, investment thinking and company stories from the Tirla ecosystem. Thoughtful writing, no noise.</p><a class="btn ghost" href="mailto:hello@tirla.vc?subject=Join%20Tirla%20Signals">Join Tirla Signals →</a></div>
+      <div><h3>Follow the signal</h3><p>Essays, investment thinking and company stories from the Tirla ecosystem. Thoughtful writing, no noise.</p><span class="soon">Coming soon</span></div>
     </div>
   </div>
 </section>
