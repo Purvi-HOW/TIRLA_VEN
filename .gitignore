@@ -7,7 +7,11 @@ supabase/.branches/
 !.env.example
 
 # Editors / OS
-.vscode/
+# .vscode/ is kept on purpose: Supabase generates it to enable Deno for
+# supabase/functions, so the Edge Function type-checks in the editor.
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 .idea/
 .DS_Store
 
