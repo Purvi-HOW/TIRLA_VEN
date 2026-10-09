@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         from: "Tirla Ventures <founders@tirlaventures.com>",
         to: [founderEmail],
-        reply_to: "tiralventures@gmail.com",
+        reply_to: "tirlaventures@gmail.com",
         subject: "We've received your Tirla application",
         html: `
           <div style="font-family:Arial,sans-serif;line-height:1.6;max-width:600px">
@@ -71,7 +71,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         from: "Tirla Applications <founders@tirlaventures.com>",
-        to: ["tiralventures@gmail.com"],
+        to: ["tirlaventures@gmail.com"],
         reply_to: founderEmail,
         subject: `New Tirla Application — ${companyName}`,
         html: `
