@@ -1,0 +1,15 @@
+# Supabase CLI local state — machine-specific, and where the CLI may
+# write access tokens. Never commit this.
+supabase/.temp/
+supabase/.branches/
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Node
+node_modules/
