@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-label="Tirla">
+  <rect width="40" height="40" fill="#F7F6F2"/>
+  <path d="M4 4h32v6H23v26h-6V10H4z" fill="#0E0F14"/>
+  <rect x="30" y="30" width="6" height="6" fill="#E0142F"/>
+</svg>
