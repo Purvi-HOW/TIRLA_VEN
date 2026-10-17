@@ -92,6 +92,32 @@ form{display:block}
 .choices input:checked{background:var(--red);border-color:var(--red);box-shadow:inset 0 0 0 2px var(--bg2)}
 .choices input:focus-visible{outline:2px solid var(--red);outline-offset:3px}
 
+/* deck upload — the drop zone copies the text-input box exactly, so it lines
+   up with every other field by construction rather than by matching numbers */
+.deck-input{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+/* an author display: wins over the hidden attribute's UA rule, so say it again */
+.drop[hidden]{display:none}
+.drop{display:grid;place-items:center;gap:0;text-align:center;background:var(--bg2);border:1px solid var(--line2);border-radius:0;width:100%;padding:30px 18px;cursor:pointer;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);transition:border-color .2s,box-shadow .2s,background .2s;user-select:none}
+.drop:hover{border-color:var(--ink)}
+.drop.over{border-color:var(--red);background:rgba(224,20,47,.04);box-shadow:inset 0 0 0 1px var(--red)}
+.deck-input:focus-visible+.drop{outline:2px solid var(--red);outline-offset:3px}
+.drop:focus-visible{outline:2px solid var(--red);outline-offset:3px}
+.deck-picked{display:none;border:1px solid var(--line2);background:var(--bg2);padding:14px 15px}
+.deck-picked.on{display:block}
+.deck-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between}
+.deck-meta{display:grid;gap:3px;min-width:0;flex:1 1 180px}
+.deck-name{font-size:15px;line-height:1.4;color:var(--ink);overflow-wrap:anywhere}
+.deck-size{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.deck-remove{flex:0 0 auto;display:inline-flex;align-items:center;padding:9px 15px;border:1px solid var(--line2);background:var(--bg2);font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);cursor:pointer;transition:.2s}
+.deck-remove:hover{border-color:var(--red);color:var(--red)}
+.deck-remove:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+.deck-bar{display:none;margin-top:13px;height:3px;background:rgba(14,15,20,.1);overflow:hidden}
+.deck-bar.on{display:block}
+.deck-bar i{display:block;height:100%;width:0;background:var(--red);transition:width .18s linear}
+.deck-err.on{display:block}
+/* announced, never drawn: the file row above already shows this */
+.deck-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
+
 /* close */
 .close-sec{padding-block:clamp(44px,6vw,70px)}
 .signoff{display:grid;gap:12px;margin:clamp(30px,4vw,44px) 0 0}
@@ -325,6 +351,27 @@ footer a.mono:hover{color:var(--ink)}
         <label for="f_else">What didn't we ask that we should know?</label>
         <textarea id="f_else" name="anything_else" class="tall" required maxlength="8000"></textarea>
       </div>
+
+      <div class="f" id="deck_field">
+        <label for="f_deck">Have a deck or one-pager? Upload it.</label>
+        <p class="hint" id="deck_hint">Optional. PDF, PPT, PPTX or KEY, up to 25 MB.</p>
+        <input type="file" class="deck-input" id="f_deck" aria-describedby="deck_hint"
+               accept=".pdf,.ppt,.pptx,.key,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation">
+        <div class="drop" id="deck_drop" role="button" tabindex="0"
+             aria-controls="f_deck" aria-describedby="deck_hint">Drag &amp; drop your deck, or browse ↗</div>
+        <div class="deck-picked" id="deck_picked">
+          <div class="deck-row">
+            <span class="deck-meta">
+              <span class="deck-name" id="deck_name"></span>
+              <span class="deck-size" id="deck_size"></span>
+            </span>
+            <button type="button" class="deck-remove" id="deck_remove">Remove</button>
+          </div>
+          <div class="deck-bar" id="deck_bar"><i id="deck_fill"></i></div>
+        </div>
+        <div class="fe deck-err" id="deck_err" aria-live="assertive"></div>
+        <p class="deck-status" id="deck_status" aria-live="polite"></p>
+      </div>
     </div>
 
     <div class="signoff">
@@ -381,7 +428,7 @@ footer a.mono:hover{color:var(--ink)}
 
 <script>
 (function(){
-  const NOTICE_VERSION = '2026-10-09';
+  const NOTICE_VERSION = '2026-10-16';
 
   const form=document.getElementById('app'), btn=document.getElementById('go'),
         err=document.getElementById('err'), done=document.getElementById('done'),
@@ -563,6 +610,160 @@ footer a.mono:hover{color:var(--ink)}
   form.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(save,700)});
   form.addEventListener('change',save);
 
+  /* ---------- optional deck upload ----------
+     The file never touches the applications table. It goes to a private
+     Supabase bucket, and only its path is stored on the row. The browser has
+     no write access to that bucket: an edge function hands out a one-off
+     signed URL for a single path it chooses itself. */
+  const DECK_MAX = 25*1024*1024;
+
+  /* Extension is the source of truth — browsers disagree about Office and
+     Keynote MIME types, and Keynote very often arrives as octet-stream. */
+  const DECK_TYPES = {
+    pdf : ['application/pdf'],
+    ppt : ['application/vnd.ms-powerpoint'],
+    pptx: ['application/vnd.openxmlformats-officedocument.presentationml.presentation'],
+    key : ['application/x-iwork-keynote-sffkey','application/octet-stream','application/zip','']
+  };
+
+  const deckInput  = document.getElementById('f_deck'),
+        deckDrop   = document.getElementById('deck_drop'),
+        deckPicked = document.getElementById('deck_picked'),
+        deckName   = document.getElementById('deck_name'),
+        deckSize   = document.getElementById('deck_size'),
+        deckErr    = document.getElementById('deck_err'),
+        deckStatus = document.getElementById('deck_status'),
+        deckBar    = document.getElementById('deck_bar'),
+        deckFill   = document.getElementById('deck_fill'),
+        deckField  = document.getElementById('deck_field');
+
+  let deckFile = null;
+
+  const fmtSize = b => b >= 1024*1024 ? (b/(1024*1024)).toFixed(1)+' MB'
+                     : Math.max(1,Math.round(b/1024))+' KB';
+  const extOf   = n => (n.split('.').pop()||'').toLowerCase();
+
+  const deckFail = m => {
+    deckErr.textContent=m; deckErr.classList.add('on'); deckField.classList.add('bad');
+  };
+  const deckClear = () => {
+    deckErr.textContent=''; deckErr.classList.remove('on'); deckField.classList.remove('bad');
+  };
+
+  function deckReject(file){
+    const ext = extOf(file.name);
+    if(!DECK_TYPES[ext])
+      return 'That’s a .'+(ext||'file')+' — we can only read PDF, PPT, PPTX or KEY.';
+    /* octet-stream is accepted for .key only, which is why the extension is
+       checked first rather than trusting file.type */
+    if(file.type && DECK_TYPES[ext].indexOf(file.type) === -1)
+      return 'That file says it’s a '+file.type+', which doesn’t match its .'+ext+' ending.';
+    if(file.size > DECK_MAX)
+      return 'That’s '+fmtSize(file.size)+'. The limit is 25 MB — try exporting a lighter PDF.';
+    if(!file.size)
+      return 'That file is empty.';
+    return null;
+  }
+
+  function deckShow(){
+    if(!deckFile){
+      deckPicked.classList.remove('on'); deckDrop.hidden=false;
+      deckName.textContent=''; deckSize.textContent=''; deckStatus.textContent='';
+      deckBar.classList.remove('on'); deckFill.style.width='0';
+      return;
+    }
+    deckName.textContent = deckFile.name;
+    deckSize.textContent = fmtSize(deckFile.size);
+    deckPicked.classList.add('on');
+    deckDrop.hidden = true;
+    deckBar.classList.remove('on'); deckFill.style.width='0';
+    deckStatus.textContent = 'Attached: '+deckFile.name+', '+fmtSize(deckFile.size)+'.';
+  }
+
+  function deckSet(file){
+    deckClear();
+    if(!file){ return; }
+    const bad = deckReject(file);
+    if(bad){ deckFile=null; deckInput.value=''; deckShow(); deckFail(bad); return; }
+    deckFile = file;
+    deckShow();
+  }
+
+  deckInput.addEventListener('change',()=>deckSet(deckInput.files[0]||null));
+
+  deckDrop.addEventListener('click',()=>deckInput.click());
+  deckDrop.addEventListener('keydown',e=>{
+    if(e.key==='Enter'||e.key===' '||e.key==='Spacebar'){ e.preventDefault(); deckInput.click(); }
+  });
+
+  ['dragenter','dragover'].forEach(ev=>deckDrop.addEventListener(ev,e=>{
+    e.preventDefault(); deckDrop.classList.add('over');
+  }));
+  ['dragleave','dragend'].forEach(ev=>deckDrop.addEventListener(ev,()=>deckDrop.classList.remove('over')));
+  deckDrop.addEventListener('drop',e=>{
+    e.preventDefault(); deckDrop.classList.remove('over');
+    const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+    if(f){ try{ deckInput.files=e.dataTransfer.files; }catch(_){ } deckSet(f); }
+  });
+  /* stop a stray drop elsewhere on the page from navigating away mid-form */
+  ['dragover','drop'].forEach(ev=>window.addEventListener(ev,e=>{
+    if(!deckDrop.contains(e.target)) e.preventDefault();
+  }));
+
+  document.getElementById('deck_remove').addEventListener('click',()=>{
+    deckFile=null; deckInput.value=''; deckClear(); deckShow();
+    deckStatus.textContent='Deck removed.';
+    deckDrop.focus();
+  });
+
+  /* Resolve a Content-Type the bucket will accept. An empty file.type would
+     be rejected by storage, so fall back per extension. */
+  function deckUploadType(file){
+    const ext=extOf(file.name);
+    /* Keynote always goes up as octet-stream. Browsers variously call it
+       x-iwork-keynote-sffkey, application/zip or nothing at all, and only
+       octet-stream is on the bucket's allowed list for it. */
+    if(ext==='key') return 'application/octet-stream';
+    return DECK_TYPES[ext][0];
+  }
+
+  /* Ask the edge function for a signed URL, then PUT the bytes straight to
+     storage. XHR rather than fetch, because only XHR reports upload progress. */
+  async function deckUpload(file,companyName,founderEmail,onProgress){
+    const res = await fetch(SUPABASE_URL+'/functions/v1/create-deck-upload-url',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SUPABASE_PUBLISHABLE_KEY,
+        'Authorization':'Bearer '+SUPABASE_PUBLISHABLE_KEY
+      },
+      body:JSON.stringify({
+        fileName:file.name, size:file.size,
+        companyName:companyName, founderEmail:founderEmail
+      })
+    });
+
+    let body={};
+    try{ body=await res.json(); }catch(_){ }
+    if(!res.ok) throw new Error(body.error || ('Could not start the upload ('+res.status+')'));
+    if(!body.signedUrl || !body.path) throw new Error('Could not start the upload.');
+
+    await new Promise((resolve,reject)=>{
+      const xhr=new XMLHttpRequest();
+      xhr.open('PUT',body.signedUrl,true);
+      xhr.setRequestHeader('Content-Type',deckUploadType(file));
+      xhr.upload.onprogress=e=>{ if(e.lengthComputable) onProgress(e.loaded/e.total); };
+      xhr.onload=()=> (xhr.status>=200&&xhr.status<300)
+        ? resolve()
+        : reject(new Error('Storage rejected the file ('+xhr.status+')'));
+      xhr.onerror=()=>reject(new Error('The upload was interrupted.'));
+      xhr.onabort =()=>reject(new Error('The upload was cancelled.'));
+      xhr.send(file);
+    });
+
+    return {path:body.path, fileName:file.name, size:file.size};
+  }
+
   /* ---------- submit ---------- */
   const summary=document.createElement('div');
   summary.className='summary'; summary.id='summary';
@@ -632,12 +833,45 @@ footer a.mono:hover{color:var(--ink)}
 
     btn.disabled=true; btn.textContent='Sending\u2026';
     try{
-      let {error}=await supabaseClient.from('applications').insert([row]);
-      /* notice_version is optional: if that column hasn't been added yet, send
-         the application without it rather than losing the whole submission. */
-      if(error && /notice_version/.test(error.message||'')){
-        const {notice_version,...rest}=row;
-        ({error}=await supabaseClient.from('applications').insert([rest]));
+      /* The deck goes up first. If it fails we stop here, so a half-done
+         application never reaches the table \u2014 and every answer stays put. */
+      if(deckFile){
+        deckClear();
+        deckBar.classList.add('on');
+        deckStatus.textContent='Uploading your deck\u2026';
+        try{
+          const up=await deckUpload(deckFile,row.company_name,row.founder_email,p=>{
+            deckFill.style.width=Math.round(p*100)+'%';
+            btn.textContent='Sending\u2026 '+Math.round(p*100)+'%';
+          });
+          row.deck_path=up.path; row.deck_file_name=up.fileName; row.deck_size_bytes=up.size;
+          deckFill.style.width='100%';
+          deckStatus.textContent='Deck uploaded.';
+          btn.textContent='Sending\u2026';
+        }catch(uex){
+          deckBar.classList.remove('on'); deckFill.style.width='0';
+          deckStatus.textContent='';
+          btn.disabled=false; btn.textContent='Pitch Tirla \u2197';
+          /* the message may come from the server, so don't assume punctuation */
+          const why=/[.!?]$/.test(uex.message) ? uex.message : uex.message+'.';
+          deckFail(why+' Nothing was sent \u2014 your answers are still here. Try again, or remove the deck and send the application without it.');
+          deckField.scrollIntoView({block:'center',behavior:'smooth'});
+          return;
+        }
+      }
+
+      /* notice_version and the deck columns are all optional: if a migration
+         hasn't been run yet, drop whichever column the error names and retry
+         rather than losing the whole submission. Retries are bounded by the
+         number of optional columns, so this can't spin. */
+      const OPTIONAL=['notice_version','deck_path','deck_file_name','deck_size_bytes'];
+      let attempt={...row}, error;
+      for(let i=0;i<=OPTIONAL.length;i++){
+        ({error}=await supabaseClient.from('applications').insert([attempt]));
+        if(!error) break;
+        const missing=OPTIONAL.filter(c=>c in attempt && (error.message||'').includes(c));
+        if(!missing.length) break;
+        missing.forEach(c=>delete attempt[c]);
       }
       if(error) throw new Error(error.message||'Insert failed');
       try{localStorage.removeItem(KEY)}catch(e){}
